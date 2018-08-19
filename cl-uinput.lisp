@@ -5,6 +5,8 @@
 
 (in-package :cl-uinput)
 
+(defparameter cl-uinput-pipe "/tmp/cl-uinput-pipe")
+
 (defun load-dependencies () ;; (load-dependencies)
   (load "cl-evdev/cl-evdev.asd")
   (load "cl-event-handler/cl-event-handler.asd")
@@ -64,62 +66,47 @@
        (receive-key-event in))
       (t nil))))
 
+(defun write-pipe (pipe-file packet)
+  (with-open-file (str pipe-file
+		       :direction :output
+		       :if-exists :overwrite)
+    (format str packet)))
 
-(defun thread-fn ()
-  ;;  (read-device "/dev/input/event18")
+(defun write-uinput-pipe (packet)
+  (write-pipe cl-uinput-pipe packet))
+
+(defun cl-evdev-thread ()
   (read-device "/dev/input/event4") ;; keyboard
   )
-
-(setq event-thread
-  (bordeaux-threads:make-thread 'thread-fn :name "evdev read thread"))
 
 (defun destroy-event-loop-thread ()
   (bordeaux-threads:destroy-thread event-thread))
 
-;; "/dev/input/event18" created for uinput
 
-'(
-  (read-device "/dev/input/wacom")
-  (read-device "/dev/uinput")
+(defun compile-uinput-listener ()
+  (asdf::run-program "gcc uinput_listener.c -o uinput_listener"))
+
+(defun run-uinput-listener ()
+  (asdf::run-program "./uinput_listener" :output t))
+  
+
+(defun test-virtual-device () ;; (test-virtual-device)
+  (compile-uinput-listener)
+
+  (setq uinput-pipe-thread
+      (bordeaux-threads:make-thread 'run-uinput-listener
+				    :name "cl-uinput-pipe"))
+
+  (sleep 1)
+  (write-uinput-pipe "test-packet")
+  ;; (write-uinput-pipe ":q")
+  (bordeaux-threads:destroy-thread uinput-pipe-thread)
   )
 
-(defun run-virtual-driver-manage ()
-  (asdf::run-program "./a.out" :output t)
-  )
+(setq cl-evdev-thread
+      (bordeaux-threads:make-thread 'device-event-thread
+				    :name "cl-uinput-evdev"))
 
-(defun test-virtual-device ()
-  (run-virtual-driver-manage)
-  (read-device "/dev/uinput")
-  )
-
-(defun compile-c-driver ()
-  "virtual device driver emitter"
-  (setq
-   headers
-   '("#include <stdio.h>"
-     "#include <errno.h>"
-     "#include <ncurses.h>"
-     "#include <linux/input.h>"
-     "#include <linux/uinput.h>"
-     "#include <unistd.h>"
-     "#include <string.h>"
-     "#include <fcntl.h>"
-     "#include <termkey.h>"))
-  '(
-  ;; emit(fd,  .. ) write(fd, ) input_event to device file fd
-  ;; main(void) ; fd = open("/dev/uinput")
-  ;; allocate uinput_setup struct usetup
-  ;; UI_DEV_CREATE kernel creates device node
-  ;; sleep(1), pause to wait for load + new input
-  ;; emit(fd, EV_KEY, KEY_SPACE, 1)
-  ;;
-  ;; ioctl(fd, UI_DEV_DESTROY)
-  ;; close(fd)
-    ;; return(0);
-    )
-
-  ;; (DEFSYSCALL .. in IOLIB
-  )
 
 (define-constant +cl-evdev-input-codes+
     '(

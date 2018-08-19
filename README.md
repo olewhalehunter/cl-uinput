@@ -20,6 +20,7 @@
 * gcc vm.c
 
 # Todo
+* write to pipe from common lisp
 * vm.c pipe process https://stackoverflow.com/questions/2784500/how-to-send-a-simple-string-between-two-programs-using-pipes
 * keyboard evdev -> SBCL -> vm.c uinput virtual keyboard device
 * pipe SBCL output to vm.c
