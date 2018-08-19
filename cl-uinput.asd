@@ -5,6 +5,7 @@
     :serial t
     :depends-on (#:cl-event-handler
                  #:cl-evdev
+		 #:fd-gray
 		 #:iolib
 		 #:iolib/os
                  )

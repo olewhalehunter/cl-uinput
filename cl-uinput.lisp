@@ -16,8 +16,11 @@
 (defun load-dependencies ()
   (load "cl-evdev/cl-evdev.asd")
   (load "cl-event-handler/cl-event-handler.asd")
+  (load "fd-gray/fd-gray.asd")
+
   (mapcar #'ql:quickload '(:cl-event-handler
 			   :cl-evdev
+			   :fd-gray
 			   :iolib
 			   :iolib/os))
   )

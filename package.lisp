@@ -3,6 +3,7 @@
   (:use #:cl
 	#:cl-event-handler
 	#:cl-evdev
+	#:fd-gray
 	#:iolib
 	#:iolib/os)
   (:documentation "Linux virtual devices in Common Lisp.")

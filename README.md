@@ -9,6 +9,7 @@
 * apt-get install libfixposix-dev
 * http://github.com/jtgans/cl-evdev
 * http://github.com/jtgans/cl-event-handler
+* https://github.com/cffi-posix/fd-gray
 * https://github.com/sionescu/iolib
 * run (load-dependencies) in cl-uinput.lisp
 * see dependencies in vm.c
