@@ -1,4 +1,4 @@
-# Linux Virtual Device Interfaces with Common Lisp
+# Linux Virtual Devices with Common Lisp
 * userspace virtual input devices
 * uinput documentation:
 * https://www.kernel.org/doc/html/v4.12/input/uinput.html
@@ -17,10 +17,10 @@
 # Install
 * (load "cl-uinput.asd")
 * (ql:quickload :cl-uinput)
-* Compile it with "make". Install any missing libraries if the compilation fails.
-
+* gcc vm.c
 
 # Todo
+* list common cl-evdev keycodes
 * read /dev/uinput through evdev
 * compile and run vm.c from SBCL
 * send keys thrugh vm.c

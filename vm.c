@@ -28,18 +28,24 @@ int main(void)
 
    int fd = open("/dev/uinput", O_WRONLY | O_NONBLOCK);
 
+   if (fd == 1){
+     puts("Error opening /dev/uinput");
+     return -1; 
+   }
+
    /*
     * The ioctls below will enable the device that is about to be
     * created, to pass key events, in this case the space key.
     */
    ioctl(fd, UI_SET_EVBIT, EV_KEY);
-   ioctl(fd, UI_SET_KEYBIT, KEY_SPACE);
+   ioctl(fd, UI_SET_KEYBIT, KEY_G);
 
    memset(&usetup, 0, sizeof(usetup));
    usetup.id.bustype = BUS_USB;
    usetup.id.vendor = 0x1234; /* sample vendor */
+
    usetup.id.product = 0x5678; /* sample product */
-   strcpy(usetup.name, "Example device");
+   strcpy(usetup.name, "Virtual Device");
 
    ioctl(fd, UI_DEV_SETUP, &usetup);
    ioctl(fd, UI_DEV_CREATE);
@@ -54,8 +60,22 @@ int main(void)
    sleep(3);
 
    /* Key press, report the event, send key release, and report again */
+
+   ioctl(fd, UI_SET_KEYBIT, KEY_G);
+   
+   emit(fd, EV_KEY, KEY_G, 1);
+   emit(fd, EV_SYN, SYN_REPORT, 0);
+   sleep(1);
+   emit(fd, EV_KEY, KEY_G, 0);
+   emit(fd, EV_SYN, SYN_REPORT, 0);
+
+   ioctl(fd, UI_SET_KEYBIT, KEY_SPACE);
+
+   
+    
    emit(fd, EV_KEY, KEY_SPACE, 1);
    emit(fd, EV_SYN, SYN_REPORT, 0);
+
    emit(fd, EV_KEY, KEY_SPACE, 0);
    emit(fd, EV_SYN, SYN_REPORT, 0);
 
@@ -63,7 +83,7 @@ int main(void)
     * Give userspace some time to read the events before we destroy the
     * device with UI_DEV_DESTOY.
     */
-   sleep(7);
+   sleep(3);
 
    ioctl(fd, UI_DEV_DESTROY);
    close(fd);
