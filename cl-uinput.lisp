@@ -5,7 +5,7 @@
 
 (in-package :cl-uinput)
 
-(defun load-dependencies ()
+(defun load-dependencies () ;; (load-dependencies)
   (load "cl-evdev/cl-evdev.asd")
   (load "cl-event-handler/cl-event-handler.asd")
   (load "fd-gray/fd-gray.asd")
@@ -13,14 +13,20 @@
 			   :cl-evdev
 			   :iolib
 			   :iolib/os
+			   :bordeaux-threads
 			   ;;:fd-gray
 			   ))
   (load "cl-uinput.asd")
   (ql:quickload :cl-uinput)
+  (use-package :cl-evdev)
   )
 
 (defun list-devices ()
   (iolib/os:list-directory "/dev/"))
+
+(defun list-input-devices ()
+  (iolib/os:list-directory "/dev/input/by-id")
+  )
 
 (defun virtual-directory ()
   (let ((cd (iolib/os:current-directory)))
@@ -35,24 +41,39 @@
       (write-sequence seq out))))
 
 (defun receive-key-event (event)
-  (with-slots (name) event
+  (with-slots (cl-evdev::name) event
     (progn
-      (print `(KEY EVENT :NAME ,name))
-      (terpri)
-      (case name
-	('g (print "good luck"))
-	('t (print "T pressed!!"))
-	('space (print "Space pressed!!"))
+      (case cl-evdev::name
+	('cl-evdev::l (print "L pressed"))
+	('cl-evdev::g (print "G pressed"))
+	('cl-evdev::t (print "T pressed"))
+	('cl-evdev::space (print "Space pressed"))
 	)
       )))
 
 (defun read-device (device-file)
   "read virtual or real device"
-  (cl-evdev::with-evdev-device 
-      (in device-file)
-    (cond ((typep in 'KEYBOARD-EVENT)
-	   (receive-key-event in))
-	  (print `(UKNOWN EVENT TYPE ,in)))))
+  (cl-evdev:with-evdev-device (in device-file)
+    (cond
+      ;;((typep in 'cl-evdev::RELATIVE-EVENT)
+      ;; (receive-key-event in))
+      ;;((typep in 'cl-evdev::ABSOLUTE-EVENT)
+      ;; (receive-key-event in))
+      ((typep in 'KEYBOARD-EVENT)
+       (receive-key-event in))
+      (t nil))))
+
+
+(defun thread-fn ()
+  ;;  (read-device "/dev/input/event18")
+  (read-device "/dev/input/event4") ;; keyboard
+  )
+
+(setq event-thread
+  (bordeaux-threads:make-thread 'thread-fn :name "evdev read thread"))
+
+(defun destroy-event-loop-thread ()
+  (bordeaux-threads:destroy-thread event-thread))
 
 ;; "/dev/input/event18" created for uinput
 
