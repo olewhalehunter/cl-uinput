@@ -13,6 +13,14 @@
 (defun list-devices ()
   (iolib/os:list-directory "/dev/"))
 
+(defun unistd-write (filename)
+  (let ((seq (make-array 128 '(unsigned-byte 8))))
+    (fd-gray:with-output-stream
+	;; fcntl write-only
+	(out (fcntl:open file-name fcntl:+o-wronly+))
+      (write-sequence seq out)))
+  )
+
 (defun load-dependencies ()
   (load "cl-evdev/cl-evdev.asd")
   (load "cl-event-handler/cl-event-handler.asd")
