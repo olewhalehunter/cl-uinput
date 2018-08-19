@@ -11,21 +11,26 @@
   )
 
 
+(defun receive-key-event (event)
+  (with-slots (name) event
+    (print `(KEY EVENT :NAME ,name))
+    ))
 
 (defun read-device (device-file)
   "read virtual or real device"
   (cl-evdev::with-evdev-device 
       (in device-file)
-    (cond ((typep in 'RELATIVE-EVENT)
-	   (handle-scroll in))
-	  ((typep in 'ABSOLUTE-EVENT)
-	   (handle-pen in))
+    (cond ;;((typep in 'RELATIVE-EVENT)
+	   ;;(handle-scroll in))
+	  ;;((typep in 'ABSOLUTE-EVENT)
+	   ;;(handle-pen in))
 	  ((typep in 'KEYBOARD-EVENT)
-	   (handle-button in))
+	   (receive-key-event in))
 	  (t nil))))
 
 '(
-  (read-device"/dev/input/wacom")
+  (read-device "/dev/input/wacom")
+  (read-device "/dev/uinput")
   )
 
 

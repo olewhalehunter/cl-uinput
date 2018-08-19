@@ -7,9 +7,8 @@
 .
 # Dependencies
 * http://github.com/jtgans/cl-evdev
-* (load "cl-evdev.asd")
 * http://github.com/jtgans/cl-event-handler
-* (load "cl-event-handler.asd")
+* run (load-dependencies) in cl-uinput.lisp
 * (ql:quickload :cl-evdev)
 * see dependencies in vm.c
 
