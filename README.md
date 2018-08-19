@@ -6,10 +6,11 @@
 
 .
 # Dependencies
+* apt-get install libfixposix-dev
 * http://github.com/jtgans/cl-evdev
 * http://github.com/jtgans/cl-event-handler
+* https://github.com/sionescu/iolib
 * run (load-dependencies) in cl-uinput.lisp
-* (ql:quickload :cl-evdev)
 * see dependencies in vm.c
 
 # Install

@@ -3,11 +3,23 @@
 ;; By writing to /dev/uinput device, a process can create a virtual input device with specific capabilities. Once this virtual device is created, the process can send events through it, that will be delivered to userspace and in-kernel consumers.
 ;; see README.md
 
+(in-package :cl-uinput)
+
+(defun virtual-directory ()
+  (let ((cd (iolib/os:current-directory)))
+    '()
+    ))
+
+(defun list-devices ()
+  (iolib/os:list-directory "/dev/"))
+
 (defun load-dependencies ()
   (load "cl-evdev/cl-evdev.asd")
   (load "cl-event-handler/cl-event-handler.asd")
   (mapcar #'ql:quickload '(:cl-event-handler
-			   :cl-evdev))
+			   :cl-evdev
+			   :iolib
+			   :iolib/os))
   )
 
 
@@ -37,7 +49,7 @@
 (defun compile-c-driver ()
   "virtual device driver emitter"
   (setq
-   "headers"
+   headers
    '("#include <stdio.h>"
      "#include <errno.h>"
      "#include <ncurses.h>"
