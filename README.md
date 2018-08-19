@@ -1,4 +1,4 @@
-# Linux Virtual Devices with Common Lisp
+# Linux Virtual Input Devices with Common Lisp
 
 * userspace virtual input devices
 * uinput documentation: https://www.kernel.org/doc/html/v4.12/input/uinput.html
