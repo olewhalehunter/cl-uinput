@@ -33,22 +33,31 @@ int main(void)
      return -1; 
    }
 
+   //
+   
+   //Now retrieve all files in that folder and grep for event* then
+
    /*
     * The ioctls below will enable the device that is about to be
     * created, to pass key events, in this case the space key.
     */
    ioctl(fd, UI_SET_EVBIT, EV_KEY);
-   ioctl(fd, UI_SET_KEYBIT, KEY_G);
+   ioctl(fd, UI_SET_KEYBIT, KEY_G);   
 
    memset(&usetup, 0, sizeof(usetup));
    usetup.id.bustype = BUS_USB;
-   usetup.id.vendor = 0x1234; /* sample vendor */
+   usetup.id.vendor = 0x0044; /* sample vendor */
 
-   usetup.id.product = 0x5678; /* sample product */
-   strcpy(usetup.name, "Virtual Device");
+   usetup.id.product = 0x4434; /* sample product */
+   strcpy(usetup.name, "CL-UINPUT Lisp Virtual Device");
 
    ioctl(fd, UI_DEV_SETUP, &usetup);
    ioctl(fd, UI_DEV_CREATE);
+
+   // virtual device identifier, + eventN, /dev/input/evenN device file
+   char sysfs_device_name[16];
+   ioctl(fd, UI_GET_SYSNAME(sizeof(sysfs_device_name)), sysfs_device_name);
+   printf("/sys/devices/virtual/input/%s\n", sysfs_device_name);
 
    /*
     * On UI_DEV_CREATE the kernel will create the device node for this
