@@ -3,7 +3,7 @@
 * uinput documentation:
 * https://www.kernel.org/doc/html/v4.12/input/uinput.html
 * see github.com/jtgans/cl-evdev for linux device event docuemtnation
-
+* see https://who-t.blogspot.com/2016/05/the-difference-between-uinput-and-evdev.html for an introduction to uinput virtual devices
 .
 # Dependencies
 * apt-get install libfixposix-dev

@@ -54,6 +54,8 @@
 	   (receive-key-event in))
 	  (print `(UKNOWN EVENT TYPE ,in)))))
 
+;; "/dev/input/event18" created for uinput
+
 '(
   (read-device "/dev/input/wacom")
   (read-device "/dev/uinput")

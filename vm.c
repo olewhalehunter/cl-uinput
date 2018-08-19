@@ -69,9 +69,8 @@ int main(void)
    emit(fd, EV_KEY, KEY_G, 0);
    emit(fd, EV_SYN, SYN_REPORT, 0);
 
-   ioctl(fd, UI_SET_KEYBIT, KEY_SPACE);
-
-   
+   // KEY_SPACE
+   ioctl(fd, UI_SET_KEYBIT, KEY_SPACE);   
     
    emit(fd, EV_KEY, KEY_SPACE, 1);
    emit(fd, EV_SYN, SYN_REPORT, 0);
