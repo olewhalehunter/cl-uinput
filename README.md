@@ -20,5 +20,7 @@
 
 
 # Todo
-* gcc vm.c
-* register vm.c in lisp
+* read /dev/uinput through evdev
+* compile and run vm.c from SBCL
+* send keys thrugh vm.c
+* define and send macros from SBCL over to uinput virtual device
