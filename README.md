@@ -20,8 +20,8 @@
 * gcc vm.c
 
 # Todo
-* register real input device /dev/input/event4
-* read real keyboard with cl-evdev thread, signal thread close
+* keyboard evdev -> SBCL -> vm.c uinput virtual keyboard device
+* pipe SBCL output to vm.c
 * register /dev/input/eventN virtual device events
 * read /dev/input/eventN through evdev
 * compile and run vm.c from SBCL

@@ -14,6 +14,7 @@
 			   :iolib
 			   :iolib/os
 			   :bordeaux-threads
+			   :cffi
 			   ;;:fd-gray
 			   ))
   (load "cl-uinput.asd")
