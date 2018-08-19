@@ -5,11 +5,18 @@
 * see github.com/jtgans/cl-evdev for linux device event docuemtnation
 
 .
+# Dependencies
+* http://github.com/jtgans/cl-evdev
+* (load "cl-evdev.asd")
+* http://github.com/jtgans/cl-event-handler
+* (load "cl-event-handler.asd")
+* (ql:quickload :cl-evdev)
+* see dependencies in vm.c
+
 # Install
-- (load "cl-uinput.asd")
-- (ql:quickload :cl-uinput)
-- see dependencies in vm.c
-- Compile it with "make". Install any missing libraries if the compilation fails.
+* (load "cl-uinput.asd")
+* (ql:quickload :cl-uinput)
+* Compile it with "make". Install any missing libraries if the compilation fails.
 
 
 # Todo

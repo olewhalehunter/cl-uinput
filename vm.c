@@ -51,7 +51,7 @@ int main(void)
     * the event, otherwise it will not notice the event we are about
     * to send. This pause is only needed in our example code!
     */
-   sleep(1);
+   sleep(3);
 
    /* Key press, report the event, send key release, and report again */
    emit(fd, EV_KEY, KEY_SPACE, 1);
@@ -63,7 +63,7 @@ int main(void)
     * Give userspace some time to read the events before we destroy the
     * device with UI_DEV_DESTOY.
     */
-   sleep(1);
+   sleep(7);
 
    ioctl(fd, UI_DEV_DESTROY);
    close(fd);
