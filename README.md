@@ -1,6 +1,6 @@
 # Linux Virtual Input Devices in CL
 
-[diagram](diagram.png)
+![diagram](diagram.png)
 * userspace virtual input devices
 * multiplex, filter, and process input devices with Common Lisp
 
