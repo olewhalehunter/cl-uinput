@@ -35,29 +35,6 @@
     cd
     ))
 
-(defun receive-key-event (event)
-  (with-slots (cl-evdev::name) event
-    (progn
-      (case cl-evdev::name
-	('cl-evdev::l (print "L pressed"))
-	('cl-evdev::g (print "G pressed"))
-	('cl-evdev::t (print "T pressed"))
-	('cl-evdev::space (print "Space pressed"))
-	)
-      )))
-
-(defun read-device (device-file)
-  "read virtual or real device"
-  (cl-evdev:with-evdev-device (in device-file)
-    (cond
-      ;;((typep in 'cl-evdev::RELATIVE-EVENT)
-      ;; (receive-key-event in))
-      ;;((typep in 'cl-evdev::ABSOLUTE-EVENT)
-      ;; (receive-key-event in))
-      ((typep in 'KEYBOARD-EVENT)
-       (receive-key-event in))
-      (t nil))))
-
 (defun write-pipe (pipe-file packet)
   (with-open-file (str pipe-file
 		       :direction :output
@@ -67,37 +44,66 @@
 (defun write-uinput-pipe (packet)
   (write-pipe cl-uinput-pipe packet))
 
-(defun cl-evdev-thread ()
-  (read-device "/dev/input/event4") ;; keyboard
- )
 
-(defun destroy-event-loop-thread ()
-  (bordeaux-threads:destroy-thread event-thread))
-
-
-(defun compile-uinput-listener ()
+ (defun compile-uinput-listener ()
   (asdf::run-program "gcc uinput_listener.c -o uinput_listener"))
 
 (defun run-uinput-listener ()
   (asdf::run-program "./uinput_listener" :output t))
   
-(defun close-uinput-listener () ;; (close-uinput-listener)
-  (write-uinput-pipe ":q")
-  (bordeaux-threads:destroy-thread uinput-pipe-thread))
-
-(defun send-virtual (packet)
-  (write-uinput-pipe packet))
-
-
 (defun start-uint-pipe-listener () ;; (start-uint-pipe-listener)
   (compile-uinput-listener)
 
   (setq uinput-pipe-thread
       (bordeaux-threads:make-thread 'run-uinput-listener
-				    :name "cl-uinput-pipe"))
+				    :name "cl-uinput-pipe")))
 
-  (send-virtual "boo!")
-  )
+(defun close-uinput-pipe-listener () ;; (close-uinput-listener)
+  (write-uinput-pipe ":q")
+  (bordeaux-threads:destroy-thread uinput-pipe-thread))
+
+(defparameter *default-device* "/dev/input/event4")
+(defparameter *current-device* *default-device*)
+
+
+(defun start-evdev-listener (device) ;; (start-evdev-listener "/dev/input/event4")
+  (setq *current-device* device)
+  (setq evdev-thread
+      (bordeaux-threads:make-thread 'evdev-device-listener
+				    :name "cl-uinput-evdev")))
+
+(defun close-evdev-listener () ;; (close-evdev-listener)
+  (bordeaux-threads:destroy-thread evdev-thread))
+  
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Input Device Bindings
+;;
+
+(defun evdev-device-listener ()
+  (evdev-listen-to *current-device*))
+
+(defun evdev-listen-to (device-file)
+  "read virtual or real device"
+  (cl-evdev:with-evdev-device (in device-file)
+    (cond
+      ((typep in 'cl-evdev::RELATIVE-EVENT)
+       nil)
+      ((typep in 'cl-evdev::ABSOLUTE-EVENT)
+       nil)
+      ((typep in 'KEYBOARD-EVENT)
+       (receive-key-event in))
+      (t nil))))
+
+(defun receive-key-event (event)
+  (with-slots (cl-evdev::name) event
+    (progn
+      (if (numberp cl-evdev::name)
+	  (print (write-to-string cl-evdev::name))
+	  (case (intern (symbol-name cl-evdev::name))
+	    (t (print `(,(intern (symbol-name name)) PRESSED)))
+	    )
+	  ))))
 
 (defparameter +cl-evdev-input-codes+
     '(
