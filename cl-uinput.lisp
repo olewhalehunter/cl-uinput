@@ -6,7 +6,10 @@
 (in-package :cl-uinput)
 
 (declaim (sb-ext:muffle-conditions cl:warning))
-(defparameter cl-uinput-pipe "/tmp/cl-uinput-pipe")
+
+(defparameter *cl-uinput-pipe* "/tmp/cl-uinput-pipe")
+(defparameter *default-device* "/dev/input/event4")
+(defparameter *current-device* *default-device*)
 
 (defun load-dependencies () ;; (load-dependencies)
   (load "cl-evdev/cl-evdev.asd")
@@ -42,8 +45,7 @@
     (format str packet)))
 
 (defun write-uinput-pipe (packet)
-  (write-pipe cl-uinput-pipe packet))
-
+  (write-pipe *cl-uinput-pipe* packet))
 
  (defun compile-uinput-listener ()
   (asdf::run-program "gcc uinput_listener.c -o uinput_listener"))
@@ -51,19 +53,18 @@
 (defun run-uinput-listener ()
   (asdf::run-program "./uinput_listener" :output t))
   
-(defun start-uint-pipe-listener () ;; (start-uint-pipe-listener)
+(defun start-uinput-pipe-listener () ;; (start-uinput-pipe-listener)
   (compile-uinput-listener)
-
   (setq uinput-pipe-thread
       (bordeaux-threads:make-thread 'run-uinput-listener
 				    :name "cl-uinput-pipe")))
 
-(defun close-uinput-pipe-listener () ;; (close-uinput-listener)
+(defun close-uinput-pipe-listener () ;; (close-uinput-pipe-listener)
   (write-uinput-pipe ":q")
   (bordeaux-threads:destroy-thread uinput-pipe-thread))
 
-(defparameter *default-device* "/dev/input/event4")
-(defparameter *current-device* *default-device*)
+
+
 
 
 (defun start-evdev-listener (device) ;; (start-evdev-listener "/dev/input/event4")
