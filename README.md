@@ -1,6 +1,7 @@
-# Linux Virtual Input Devices with Common Lisp
+# Linux Virtual Input Devices in CL
 
 * userspace virtual input devices
+* multiplex, filter, and process input devices with Common Lisp
 * uinput documentation: https://www.kernel.org/doc/html/v4.12/input/uinput.html
 * see github.com/jtgans/cl-evdev for linux input device events
 * see https://who-t.blogspot.com/2016/05/the-difference-between-uinput-and-evdev.html for an introduction to uinput virtual devices
@@ -12,20 +13,16 @@
 * https://github.com/cffi-posix/fd-gray
 * https://github.com/sionescu/iolib
 * run (load-dependencies) in cl-uinput.lisp
-* see dependencies in vm.c
+* see dependencies in uinput_listener.c
 
 # Install
 * (load "cl-uinput.asd")
 * (ql:quickload :cl-uinput)
-* gcc vm.c
+* gcc uinput_listener.c -o uinput_listener
 
 # Todo
-* write to pipe from common lisp
-* vm.c pipe process https://stackoverflow.com/questions/2784500/how-to-send-a-simple-string-between-two-programs-using-pipes
-* keyboard evdev -> SBCL -> vm.c uinput virtual keyboard device
-* pipe SBCL output to vm.c
-* register /dev/input/eventN virtual device events
-* read /dev/input/eventN through evdev
-* compile and run vm.c from SBCL
-* register input from keyboard device to virtual device
+* sbcl evdev keys global REPL then
+* record -> uinput pipe
+* register /dev/input/event4 virtual device events (send-key)
+* key macro uint_listener, from record (hotkey begin)
 * define and send macros from keyboard -> SBCL -> uinput virtual device

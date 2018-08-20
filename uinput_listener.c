@@ -13,8 +13,7 @@
 #define MAX_BUF 2048
 #define PIPE_FILE "/tmp/cl-uinput-pipe"
 
-// Write Input Device Event to uinput Virtual Device
-void uinput_emit(int fd, int type, int code, int val)
+void uinput_write(int fd, int type, int code, int val)
 {
    struct input_event ie;
    ie.type = type;
@@ -57,11 +56,10 @@ int main(void)
    puts("Checking virtual device...\n");
    printf("/sys/devices/virtual/input/%s\n", sysfs_device_name);
 
-   // Pipe Listener REPL
    int steps;
-   steps = 70;
+   steps = 300;
    while (steps > 0){
-     usleep(100);
+     usleep(10);
      puts("Listening...\n");
      
      read(pipe_fd, input_pipe_buf, MAX_BUF);
@@ -74,20 +72,18 @@ int main(void)
      steps--;
    }
    close(pipe_fd);
-     
-   /* Key presses */ 
-   
-   uinput_emit(fd, EV_KEY, KEY_G, 1);
-   uinput_emit(fd, EV_SYN, SYN_REPORT, 0);
+        
+   uinput_write(fd, EV_KEY, KEY_G, 1);
+   uinput_write(fd, EV_SYN, SYN_REPORT, 0);
    usleep(100);
-   uinput_emit(fd, EV_KEY, KEY_G, 0);
-   uinput_emit(fd, EV_SYN, SYN_REPORT, 0);
+   uinput_write(fd, EV_KEY, KEY_G, 0);
+   uinput_write(fd, EV_SYN, SYN_REPORT, 0);
     
-   uinput_emit(fd, EV_KEY, KEY_X, 1);
-   uinput_emit(fd, EV_SYN, SYN_REPORT, 0);
+   uinput_write(fd, EV_KEY, KEY_X, 1);
+   uinput_write(fd, EV_SYN, SYN_REPORT, 0);
    usleep(100);
-   uinput_emit(fd, EV_KEY, KEY_X, 0);
-   uinput_emit(fd, EV_SYN, SYN_REPORT, 0);
+   uinput_write(fd, EV_KEY, KEY_X, 0);
+   uinput_write(fd, EV_SYN, SYN_REPORT, 0);
 
    ioctl(fd, UI_DEV_DESTROY);
    close(fd);

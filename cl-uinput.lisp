@@ -5,6 +5,7 @@
 
 (in-package :cl-uinput)
 
+(declaim (sb-ext:muffle-conditions cl:warning))
 (defparameter cl-uinput-pipe "/tmp/cl-uinput-pipe")
 
 (defun load-dependencies () ;; (load-dependencies)
@@ -17,7 +18,6 @@
 			   :iolib/os
 			   :bordeaux-threads
 			   :cffi
-			   ;;:fd-gray
 			   ))
   (load "cl-uinput.asd")
   (ql:quickload :cl-uinput)
@@ -28,20 +28,12 @@
   (iolib/os:list-directory "/dev/"))
 
 (defun list-input-devices ()
-  (iolib/os:list-directory "/dev/input/by-id")
-  )
+  (iolib/os:list-directory "/dev/input/by-id"))
 
 (defun virtual-directory ()
   (let ((cd (iolib/os:current-directory)))
-    '()
+    cd
     ))
-
-(defun unistd-write (filename)
-  (let ((seq (make-array 128 '(unsigned-byte 8))))
-    (fd-gray:with-output-stream
-	;; fcntl write-only
-	(out (fcntl:open file-name fcntl:+o-wronly+))
-      (write-sequence seq out))))
 
 (defun receive-key-event (event)
   (with-slots (cl-evdev::name) event
@@ -77,7 +69,7 @@
 
 (defun cl-evdev-thread ()
   (read-device "/dev/input/event4") ;; keyboard
-  )
+ )
 
 (defun destroy-event-loop-thread ()
   (bordeaux-threads:destroy-thread event-thread))
@@ -89,26 +81,25 @@
 (defun run-uinput-listener ()
   (asdf::run-program "./uinput_listener" :output t))
   
+(defun close-uinput-listener () ;; (close-uinput-listener)
+  (write-uinput-pipe ":q")
+  (bordeaux-threads:destroy-thread uinput-pipe-thread))
 
-(defun test-virtual-device () ;; (test-virtual-device)
+(defun send-virtual (packet)
+  (write-uinput-pipe packet))
+
+
+(defun start-uint-pipe-listener () ;; (start-uint-pipe-listener)
   (compile-uinput-listener)
 
   (setq uinput-pipe-thread
       (bordeaux-threads:make-thread 'run-uinput-listener
 				    :name "cl-uinput-pipe"))
 
-  (sleep 1)
-  (write-uinput-pipe "test-packet")
-  ;; (write-uinput-pipe ":q")
-  (bordeaux-threads:destroy-thread uinput-pipe-thread)
+  (send-virtual "boo!")
   )
 
-(setq cl-evdev-thread
-      (bordeaux-threads:make-thread 'device-event-thread
-				    :name "cl-uinput-evdev"))
-
-
-(define-constant +cl-evdev-input-codes+
+(defparameter +cl-evdev-input-codes+
     '(
       ;; Keyboard      
       (0 .   (:name reserved         :glyph nil))
@@ -225,7 +216,4 @@
       (119 . (:name pause            :glyph nil))
       (277 . (:name btnforward      :glyph nil))
       (278 . (:name btnback         :glyph nil)))
-   :test #'equal
-  :documentation "List of key code to key symbol name and printable character.
-Used to decode the code field of the Linux input_event struct defined in
-linux/include/uapi/linux/input.h.")
+   )
