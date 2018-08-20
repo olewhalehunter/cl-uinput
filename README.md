@@ -26,12 +26,12 @@
 # API
 ```common lisp
 (start-uint-pipe-listener)
-(close-uint-pipe-listener)
-(send-virtual "boo!")
+(write-uinput-pipe "boo!")
 (start-evdev-listener "/dev/input/event4")
 (usleep 1500)
 ;; enter keyboard input
 (close-evdev-listener)
+(close-uinput-pipe-listener)
 ```
 
 # Todo
