@@ -25,7 +25,7 @@
 
 # API
 ```common lisp
-(start-uint-pipe-listener)
+(start-uinput-pipe-listener)
 (write-uinput-pipe "boo!")
 (start-evdev-listener "/dev/input/event4")
 (usleep 1500)
@@ -41,6 +41,6 @@
 * sbcl evdev keys global REPL then
 * record -> uinput pipe
 * register /dev/input/event4 virtual device events (send-key)
-* key macro uint_listener, from record (hotkey begin)
+* key macro uinput_listener, from record (hotkey begin)
 * define and send macros from keyboard -> SBCL -> uinput virtual device
 * tests
